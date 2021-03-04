@@ -1,0 +1,21 @@
+{
+  "name": "raks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node index.js",
+    "login": "playwright --save-storage=.auth.json open $PAGEURL",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "playwright": "^1.9.2"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}

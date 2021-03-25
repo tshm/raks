@@ -4,25 +4,24 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 
-const storageStatePath = "./.storageState.json";
-
+const storageStatePath = process.env.STORAGESTATEPATH ?? "./.storageState.json";
+const headless = process.env.HEADLESS === "true";
 const pageurl = process.env.PAGEURL;
-console.info({ pageurl });
 const user = {
-  id: process.env.USERID,
-  passwd: process.env.PASSWD,
+  id: process.env.USERID ?? "user",
+  passwd: process.env.PASSWD ?? "password",
 };
 const initialSearchWords = process.env.SEARCH_WORDS.split(" ");
 const [loginSelecter, loggedInSelecter] = process.env.LOGIN_SELECTER.split(",");
-console.info({ loginSelecter, loggedInSelecter });
 
 /** global delay */
-const delay = 222;
-const timeout = 15000;
+const delay = +process.env.DELAY || 222;
+const timeout = +process.env.TIMEOUT || 15000;
+console.info({ storageStatePath, pageurl, headless, delay, timeout });
 
 /**
  * @param {import("playwright").Page} page
- * @param {{ id: any; passwd: any; }} userinfo
+ * @param {{ id: string; passwd: string; }} userinfo
  */
 async function login(page, userinfo) {
   await Promise.race([
@@ -64,24 +63,28 @@ async function searchWord(str, page) {
  * @param {import("playwright").Page} page
  */
 async function getTrendWords(page) {
-  await page.waitForSelector("input.trend-word", { timeout });
-  const trendWords = await page.$$eval(
-    "input",
-    (elems) =>
-      elems
-        .map((e) => e.classList.contains("trend-word") && e.value)
-        .filter((b) => b),
-    { delay }
-  );
-  console.info({ trendWords });
-  return trendWords;
+  try {
+    await page.waitForSelector("input.trend-word", { timeout });
+    const trendWords = await page.$$eval(
+      "input",
+      (elems) =>
+        elems
+          .map((e) => e.classList.contains("trend-word") && e.value)
+          .filter((b) => b),
+      { delay }
+    );
+    console.info({ trendWords });
+    return trendWords;
+  } catch {
+    return [];
+  }
 }
 
 /** main */
 (async () => {
   const browser = await chromium.launch({
-    headless: false,
-    devtools: false,
+    headless,
+    // devtools: false,
     slowMo: 300,
   });
   const storageState = getStorageState();

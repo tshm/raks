@@ -57,19 +57,7 @@ function getStorageState() {
  */
 async function searchWord(str, page) {
   console.info(`run search: word="${str}"`);
-  const searchSelector = ':is(input[type="search"],input#srchformtxt_qt)';
-  const input = await page.$(searchSelector);
-  if (!input) {
-    console.warn("no search input found");
-    return;
-  }
-  await input.click({ delay });
-  await input.click({ clickCount: 3 });
-  await input.focus();
-  await page.keyboard.press("Backspace");
-  await input.fill(str);
-  await page.click('button[type="submit"]', { delay });
-  console.info("search done.");
+  await page.goto(pageurl + str);
 }
 
 /**
@@ -99,7 +87,6 @@ async function getTrendWords(page) {
   const storageState = getStorageState();
   const context = await browser.newContext({ storageState });
   const page = await context.newPage();
-  await page.goto(pageurl);
   await searchWord("today", page);
 
   (await login(page, user)) && (await page.goto(pageurl));

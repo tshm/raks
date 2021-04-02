@@ -1,0 +1,13 @@
+version: "3.2"
+
+services:
+  raks:
+    image: mcr.microsoft.com/playwright:bionic
+    volumes:
+      - ./package.json:/home/app/package.json
+      - ./index.js:/home/app/index.js
+    working_dir: /home/app/
+    env_file:
+      - .env
+    command: >
+      bash -c "npm i && npm start"

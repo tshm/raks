@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "login": "playwright --save-storage=.auth.json open $PAGEURL",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install-act": "curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash",
+    "test": "act -j test"
   },
   "keywords": [],
   "author": "",

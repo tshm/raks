@@ -5,13 +5,11 @@ const path = require("path");
 require("dotenv").config();
 
 const storageStatePath = process.env.STORAGESTATEPATH ?? "./.storageState.json";
-const headless = process.env.HEADLESS === "true";
+const headless = process.env.HEADLESS !== "false";
 const pageurl = process.env.PAGEURL;
-const user = {
-  id: process.env.USERID ?? "user",
-  passwd: process.env.PASSWD ?? "password",
-};
-const initialSearchWords = process.env.SEARCH_WORDS.split(" ");
+const [userid, userpasswd] = process.env.USERINFO.split(":");
+const user = { id: userid, passwd: userpasswd };
+const initialSearchWords = process.env.SEARCH_WORDS?.split(" ") ?? ["test"];
 const [loginSelecter, loggedInSelecter] = process.env.LOGIN_SELECTER.split(",");
 
 /** global delay */
@@ -27,9 +25,9 @@ async function login(page, userinfo) {
   await Promise.race([
     page.waitForSelector(loginSelecter, { timeout }),
     page.waitForSelector(loggedInSelecter, { timeout }),
-  ]).catch((r) => console.error(r));
+  ]).catch((error) => console.error("login failed:", { error }));
   const requireLoggingin = await page.$(loginSelecter);
-  console.log({ requireLoggingin });
+  console.log({ requireLoggingin: !!requireLoggingin });
   if (!requireLoggingin) return false;
   console.info("logging in");
   await requireLoggingin.click();

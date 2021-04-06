@@ -1,7 +1,10 @@
 {
   "name": "raks",
   "version": "1.0.0",
-  "description": "",
+  "description": "test",
+  "repository": {
+    "url": "git@github.com:tshm/raks.git"
+  },
   "main": "index.ts",
   "scripts": {
     "start": "node index.js",

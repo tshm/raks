@@ -7,7 +7,9 @@ services:
       - ./package.json:/home/app/package.json
       - ./index.js:/home/app/index.js
     working_dir: /home/app/
-    env_file:
-      - .env
+    environment:
+      - PAGEURL
+      - USERINFO
+      - LOGIN_SELECTER
     command: >
       bash -c "npm i && npm start"

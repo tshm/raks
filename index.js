@@ -25,12 +25,12 @@ async function login(page, userinfo) {
   await Promise.race([
     page.waitForSelector(loginSelecter, { timeout }),
     page.waitForSelector(loggedInSelecter, { timeout }),
-  ]).catch((error) => console.error("login failed:", { error }));
+  ]).catch((error) => console.error("login elements not found:", { error }));
   const requireLoggingin = await page.$(loginSelecter);
-  console.log({ requireLoggingin: !!requireLoggingin });
+  console.log({ requireLoggingin: await requireLoggingin.textContent() });
   if (!requireLoggingin) return false;
   console.info("logging in");
-  await requireLoggingin.click();
+  await requireLoggingin.click({ delay });
   await page.type('input[name="u"]', userinfo.id, { delay });
   await page.type('input[name="p"]', userinfo.passwd, { delay });
   await page.click('input[name="submit"]');
@@ -88,17 +88,22 @@ async function getTrendWords(page) {
   const storageState = getStorageState();
   const context = await browser.newContext({ storageState });
   const page = await context.newPage();
-  await searchWord("today", page);
+  try {
+    await searchWord("today", page);
 
-  (await login(page, user)) && (await page.goto(pageurl));
+    (await login(page, user)) && (await page.goto(pageurl));
 
-  await runSearches(page, initialSearchWords, searchWord);
+    await runSearches(page, initialSearchWords, searchWord);
 
-  await context.storageState({ path: storageStatePath });
-  console.info("closing browser");
-  await page.close();
-  await context.close();
-  await browser.close();
+    await context.storageState({ path: storageStatePath });
+    console.info("closing browser");
+    await page.close();
+    await context.close();
+    await browser.close();
+  } catch (error) {
+    await page.screenshot({ path: "./out/error.png" });
+    console.error("caught global exception", { error });
+  }
 })();
 
 /**

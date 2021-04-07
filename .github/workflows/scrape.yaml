@@ -1,0 +1,23 @@
+name: scrape action
+on:
+  schedule:
+    - cron: "3 5 * * *"
+
+jobs:
+  scrape:
+    name: scrape
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: dir
+        run: ls -al
+      - name: cat
+        run: cat docker-compose.yaml
+      - name: run docker-compose up
+        env:
+          PAGEURL: ${{ secrets.PAGEURL }}
+          USERINFO: ${{ secrets.USERINFO }}
+          LOGIN_SELECTER: ${{ secrets.LOGIN_SELECTER }}
+        uses: sudo-bot/action-docker-compose@latest
+        with:
+          cli-args: "up -V"

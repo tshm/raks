@@ -3,13 +3,16 @@ version: "3.2"
 services:
   raks:
     image: mcr.microsoft.com/playwright:bionic
+    working_dir: /home
     volumes:
-      - ./package.json:/home/app/package.json
-      - ./index.js:/home/app/index.js
-    working_dir: /home/app/
+      - ./index.js:/home/index.js
+      - ./package.json:/home/package.json
+      - ./package-lock.json:/home/package-lock.json
+      - ./out:/home/out
     environment:
       - PAGEURL
       - USERINFO
       - LOGIN_SELECTER
+    # bash -c "pwd && ls -la && wc -l index.js"
     command: >
       bash -c "npm i && npm start"

@@ -2,15 +2,12 @@
   "name": "raks",
   "version": "1.0.0",
   "description": "test",
-  "repository": {
-    "url": "git@github.com:tshm/raks.git"
-  },
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "login": "playwright --save-storage=.auth.json open $PAGEURL",
     "install-act": "curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash",
-    "test": "act -j test"
+    "test": "act -j scrape"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +15,5 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "playwright": "^1.10.0"
-  },
-  "devDependencies": {
-    "jest": "^26.6.3"
   }
 }

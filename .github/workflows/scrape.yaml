@@ -10,15 +10,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: dir
-        run: ls -al
-      - name: cat
-        run: cat docker-compose.yaml
-      - name: run docker-compose up
-        env:
-          PAGEURL: ${{ secrets.PAGEURL }}
-          USERINFO: ${{ secrets.USERINFO }}
-          LOGIN_SELECTER: ${{ secrets.LOGIN_SELECTER }}
-        uses: sudo-bot/action-docker-compose@latest
-        with:
-          cli-args: "up -V"
+      - uses: actions/setup-node@v1
+      # - uses: microsoft/playwright-github-action@v1
+      # - name: run
+      #   run: |
+      #     npm install
+      #     npm start
+      # - name: run playwright
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 14.x
+      # - run: npm install
+      # - run: npm start
+      #   env:
+      #     PAGEURL: http://www.google.com/
+      #     # ${{ secrets.PAGEURL }}
+      #     USERINFO: ${{ secrets.USERINFO }}
+      #     LOGIN_SELECTER: ${{ secrets.LOGIN_SELECTER }}
+      # uses: sudo-bot/action-docker-compose@latest
+      # with:
+      #   cli-args: "up -V"
+      #
+      # - name: run playwright
+      #   uses: addnab/docker-run-action@v3
+      #   env:
+      #     PAGEURL: ${{ secrets.PAGEURL }}
+      #     USERINFO: ${{ secrets.USERINFO }}
+      #     LOGIN_SELECTER: ${{ secrets.LOGIN_SELECTER }}
+      #   with:
+      #     image: node:12
+      #     # image: mcr.microsoft.com/playwright:bionic
+      #     options: -w /work -v .:/work -e PAGEURL
+      #     # options: -w /work -v ${{ github.workspace }}:/work -e PAGEURL
+      #     run: |
+      #       ls -la
+      #       npm i
+      #       npm start

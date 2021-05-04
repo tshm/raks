@@ -1,8 +1,9 @@
 //@ts-check
-const { chromium } = require("playwright");
-const fs = require("fs");
-const path = require("path");
-require("dotenv").config();
+import { chromium } from "playwright";
+import { readFileSync } from "fs";
+import { join } from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
 const storageStatePath = process.env.STORAGESTATEPATH ?? "./.storageState.json";
 const headless = process.env.HEADLESS !== "false";
@@ -27,7 +28,7 @@ async function login(page, userinfo) {
     page.waitForSelector(loggedInSelecter, { timeout }),
   ]).catch((error) => console.error("login elements not found:", { error }));
   const requireLoggingin = await page.$(loginSelecter);
-  console.log({ requireLoggingin: await requireLoggingin.textContent() });
+  console.log({ requireLoggingin: await requireLoggingin?.textContent() });
   if (!requireLoggingin) return false;
   console.info("logging in");
   await requireLoggingin.click({ delay });
@@ -40,7 +41,7 @@ async function login(page, userinfo) {
 
 function getStorageState() {
   try {
-    const buf = fs.readFileSync(path.join(__dirname, storageStatePath));
+    const buf = readFileSync(join(__dirname, storageStatePath));
     const storageState = JSON.parse(buf.toString());
     return storageState;
   } catch (e) {
@@ -74,6 +75,7 @@ async function getTrendWords(page) {
     console.info({ trendWords });
     return trendWords;
   } catch {
+    console.warn("no words found");
     return [];
   }
 }
@@ -103,6 +105,7 @@ async function getTrendWords(page) {
   } catch (error) {
     await page.screenshot({ path: "./out/error.png" });
     console.error("caught global exception", { error });
+    await browser.close();
   }
 })();
 
@@ -128,5 +131,5 @@ async function runSearches(page, initialSearchWords, searchWord) {
     oldWords.push(word);
     console.info({ oldWords, searchWords });
   } while (oldWords.length < 10);
-  console.info("consumed search words");
+  console.info("consumed search words: ", oldWords.length);
 }

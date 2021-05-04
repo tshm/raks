@@ -2,12 +2,12 @@
   "name": "raks",
   "version": "1.0.0",
   "description": "test",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.mjs",
     "login": "playwright --save-storage=.auth.json open $PAGEURL",
     "install-act": "curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash",
-    "test": "act -j scrape"
+    "test": "act -j scrape --secret-file .env"
   },
   "keywords": [],
   "author": "",

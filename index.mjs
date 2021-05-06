@@ -39,13 +39,17 @@ async function login(page, userinfo) {
   return true;
 }
 
-function getStorageState() {
+/**
+ * @param {string} storageStatePath
+ */
+function getStorageState(storageStatePath) {
   try {
     const buf = readFileSync(join(__dirname, storageStatePath));
-    const storageState = JSON.parse(buf.toString());
-    return storageState;
+    /** @type {import("playwright").BrowserContextOptions} */
+    const context = { storageState: JSON.parse(buf.toString()) };
+    return context;
   } catch (e) {
-    return undefined;
+    return {};
   }
 }
 
@@ -69,7 +73,7 @@ async function getTrendWords(page) {
       (elems) =>
         elems
           .map((e) => e.classList.contains("trend-word") && e.value)
-          .filter((b) => b),
+          .filter(Boolean),
       { delay }
     );
     console.info({ trendWords });
@@ -87,8 +91,7 @@ async function getTrendWords(page) {
     // devtools: false,
     slowMo: 300,
   });
-  const storageState = getStorageState();
-  const context = await browser.newContext({ storageState });
+  const context = await browser.newContext(getStorageState(storageStatePath));
   const page = await context.newPage();
   try {
     await searchWord("today", page);
@@ -116,11 +119,11 @@ async function getTrendWords(page) {
  */
 async function runSearches(page, initialSearchWords, searchWord) {
   let searchWords = [...initialSearchWords];
-  let oldWords = [""];
+  const oldWords = new Set();
   do {
     const trendWords = await getTrendWords(page);
     searchWords = [...new Set([...searchWords, ...trendWords])].filter(
-      (word) => word && !oldWords.includes(word)
+      (word) => !!word && !oldWords.has(word)
     );
     const word = searchWords.pop();
     if (!word) {
@@ -128,8 +131,8 @@ async function runSearches(page, initialSearchWords, searchWord) {
       break;
     }
     await searchWord(word, page);
-    oldWords.push(word);
+    oldWords.add(word);
     console.info({ oldWords, searchWords });
-  } while (oldWords.length < 10);
-  console.info("consumed search words: ", oldWords.length);
+  } while (oldWords.size < 10);
+  console.info("consumed search words: ", oldWords.size);
 }
